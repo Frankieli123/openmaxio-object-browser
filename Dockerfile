@@ -6,17 +6,18 @@ WORKDIR /app
 # 复制源码
 COPY . .
 
-# 安装依赖
+# 进入 webapp 目录安装依赖
+WORKDIR /app/webapp
 RUN yarn install --frozen-lockfile
 
-# 构建前端（输出到 /app/dist）
+# 构建前端（输出到 /app/webapp/dist）
 RUN yarn build
 
 # ---------- Runtime stage ----------
 FROM nginx:alpine
 
 # 拷贝构建好的静态文件到 Nginx 默认目录
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/webapp/dist /usr/share/nginx/html
 
 EXPOSE 80
 
