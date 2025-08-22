@@ -17,14 +17,15 @@ RUN yarn install
 RUN yarn build
 
 # ===== Stage 2: build Go console (后端) =====
-FROM golang:1.22-bullseye AS build
+FROM golang:1.24-bullseye AS build
 WORKDIR /app
-# 拷贝你 fork 的源码（Coolify 会把仓库作为 build context 传进来）
 COPY . .
-# 用我们刚刚构建好的前端覆盖到仓库的 web-app/build 里（go:embed 会打进二进制）
+
+# 用刚才构建好的前端覆盖
 RUN rm -rf web-app/build && mkdir -p web-app/build
 COPY --from=web /tmp/up/web-app/build/ web-app/build/
-# 编译 console（等价于 make console）
+
+# 编译 console
 RUN go build -o console ./cmd/console
 
 # ===== Stage 3: 运行镜像 =====
